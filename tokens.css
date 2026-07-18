@@ -1,0 +1,27 @@
+/* Hallmark · portable token copy — theme: Almanac (light-only) ·
+ * source of truth lives in app/globals.css :root. Keep in sync. */
+:root {
+  --color-paper: oklch(94% 0.008 245);
+  --color-surface: oklch(97% 0.006 245);
+  --color-ink: oklch(16% 0.02 245);
+  --color-ink-2: oklch(38% 0.016 245);
+  --color-muted: oklch(46% 0.014 245);
+  --color-rule: oklch(74% 0.012 240);
+  --color-rule-2: oklch(38% 0.018 240);
+  --color-accent: oklch(38% 0.135 250);
+  --color-accent-strong: oklch(30% 0.13 250);
+  --color-accent-ink: oklch(96% 0.006 245);
+  --color-accent-wash: oklch(90% 0.03 250);
+  --color-track: oklch(86% 0.012 240);
+
+  --font-display: "Hanken Grotesk", ui-sans-serif, sans-serif;
+  --font-body: "Hanken Grotesk", ui-sans-serif, sans-serif;
+  --font-serif: "Newsreader", ui-serif, Georgia, serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --dur-short: 220ms;
+  --radius-card: 0;
+  --radius-pill: 0;
+  --radius-input: 0;
+}

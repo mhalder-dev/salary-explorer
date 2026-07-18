@@ -1,4 +1,5 @@
 import SalaryExplorer from "@/app/components/SalaryExplorer";
+import StatFigure from "@/app/components/StatFigure";
 import { SITE } from "@/lib/config";
 import { salaries } from "@/lib/salaries";
 import { computeStats, formatTaka } from "@/lib/format";
@@ -9,27 +10,14 @@ export default function Home() {
   const monthly = salaries.filter((r) => r.total !== null);
   const highest = monthly.reduce((a, b) => ((a.total ?? 0) >= (b.total ?? 0) ? a : b));
 
-  const tiles = [
+  const supporting = [
+    { label: "Records", value: stats.recordCount.toString() },
+    { label: "Universities", value: stats.universityCount.toString() },
     {
-      label: "Records",
-      value: stats.recordCount.toString(),
-      caption: "Self-reported entries",
+      label: "Reported range",
+      value: `${formatTaka(stats.minTotal)}–${formatTaka(stats.maxTotal)}`,
     },
-    {
-      label: "Universities",
-      value: stats.universityCount.toString(),
-      caption: "Institutions covered",
-    },
-    {
-      label: "Median monthly",
-      value: formatTaka(stats.medianTotal),
-      caption: "Across all records",
-    },
-    {
-      label: "Highest monthly",
-      value: formatTaka(stats.maxTotal),
-      caption: "Single reported record",
-    },
+    { label: "Highest reported", value: formatTaka(stats.maxTotal) },
   ];
 
   const faqs = [
@@ -47,7 +35,7 @@ export default function Home() {
     },
     {
       q: "How can I add or correct salary information?",
-      a: "Use the “Submit / update info” button at the top of the page. It opens a structured submission form — your entry is reviewed and then added to the dataset.",
+      a: "Use the “Submit / update info” link in the masthead. It opens a structured submission form — your entry is reviewed and then added to the dataset.",
     },
   ];
 
@@ -94,80 +82,93 @@ export default function Home() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      {/* Hero */}
-      <header className="border-b border-line bg-gradient-to-b from-accent-wash to-surface">
-        <div className="mx-auto max-w-5xl px-4 pb-12 pt-12 sm:pt-16">
-          <div className="flex flex-col gap-8 sm:flex-row sm:items-start sm:justify-between">
-            <div className="max-w-2xl">
-              <p className="font-mono text-[11px] font-medium uppercase tracking-[0.22em] text-accent-strong">
-                Bangladesh — Private universities
-              </p>
-              <h1 className="mt-4 text-3xl font-semibold tracking-tight text-ink sm:text-[2.6rem] sm:leading-[1.12]">
-                {SITE.title}
-              </h1>
-              <p className="mt-4 max-w-xl text-[15px] leading-relaxed text-ink-secondary">
-                {SITE.tagline}
-              </p>
-            </div>
-
+      {/* N6 · Newspaper masthead */}
+      <header className="px-4 pt-8">
+        <div className="mx-auto max-w-5xl text-center">
+          <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-ink-muted">
+            A crowd-sourced reference · {stats.recordCount} records ·{" "}
+            {stats.universityCount} universities · synced {SITE.lastSynced}
+          </p>
+          <h1 className="mt-3 font-sans text-[clamp(1.9rem,5vw,3.4rem)] font-bold leading-[0.98] tracking-[-0.014em] text-ink">
+            {SITE.title}
+          </h1>
+          <nav aria-label="Primary" className="mt-3">
             <a
               href={SITE.submitFormUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-lg bg-accent px-4 text-sm font-medium text-accent-contrast shadow-sm transition hover:bg-accent-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:ring-offset-2 focus-visible:ring-offset-surface"
+              className="font-mono text-xs uppercase tracking-[0.08em] text-accent underline decoration-1 underline-offset-4 transition hover:text-accent-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40"
             >
-              <svg className="size-4" viewBox="0 0 16 16" fill="currentColor">
-                <path d="M8 1a.75.75 0 0 1 .75.75v5.5h5.5a.75.75 0 0 1 0 1.5h-5.5v5.5a.75.75 0 0 1-1.5 0v-5.5h-5.5a.75.75 0 0 1 0-1.5h5.5v-5.5A.75.75 0 0 1 8 1Z" />
-              </svg>
               Submit / update info
             </a>
-          </div>
-
-          {/* Stat strip */}
-          <dl className="mt-12 grid grid-cols-2 gap-x-6 gap-y-8 sm:grid-cols-4">
-            {tiles.map((t) => (
-              <div key={t.label} className="flex flex-col">
-                <dd className="order-2 mt-3 text-[26px] font-semibold leading-none tracking-tight text-accent-strong">
-                  {t.value}
-                </dd>
-                <dt className="order-1 text-[11px] font-medium uppercase tracking-[0.14em] text-ink-secondary">
-                  <span
-                    aria-hidden
-                    className="mb-2.5 block h-0.5 w-6 rounded-full bg-accent"
-                  />
-                  {t.label}
-                </dt>
-                <dd className="order-3 mt-1.5 text-xs text-ink-muted">
-                  {t.caption}
-                </dd>
-              </div>
-            ))}
-          </dl>
+          </nav>
+          <hr className="rule-double mt-5" aria-hidden="true" />
         </div>
       </header>
 
-      {/* Explorer */}
-      <main className="mx-auto max-w-5xl px-4 py-8">
+      {/* Stat-Led hero — the median is the story */}
+      <section className="px-4 pb-4 pt-10 sm:pt-14" aria-labelledby="lead-stat">
+        <div className="mx-auto grid max-w-5xl grid-cols-1 items-end gap-x-10 gap-y-6 sm:grid-cols-[auto_1fr]">
+          <div>
+            <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-ink-muted">
+              Median monthly
+            </p>
+            <p
+              id="lead-stat"
+              className="mt-1 text-[clamp(4rem,12vw,8.5rem)] font-bold leading-none tracking-[-0.02em] text-ink"
+            >
+              <StatFigure value={stats.medianTotal} prefix="৳" />
+            </p>
+          </div>
+          <div className="max-w-md sm:pb-3">
+            <p className="font-serif text-lg leading-snug text-ink-secondary sm:text-xl">
+              — what a lecturer at a private university in Bangladesh reports
+              taking home each month. Self-reported, approximate, and searchable
+              below.
+            </p>
+          </div>
+        </div>
+
+        {/* Supporting stats — hairline-ruled columns, tabular figures */}
+        <dl className="mx-auto mt-10 grid max-w-5xl grid-cols-2 border-t border-line sm:grid-cols-4">
+          {supporting.map((s) => (
+            <div
+              key={s.label}
+              className="border-b border-line px-1 py-4 sm:border-b-0"
+            >
+              <dt className="font-mono text-[11px] uppercase tracking-[0.14em] text-ink-muted">
+                {s.label}
+              </dt>
+              <dd className="tnum mt-1.5 text-lg font-semibold text-ink">
+                {s.value}
+              </dd>
+            </div>
+          ))}
+        </dl>
+      </section>
+
+      {/* The tool */}
+      <main className="mx-auto max-w-5xl px-4 pb-8">
         <SalaryExplorer records={salaries} maxTotal={stats.maxTotal} />
 
-        {/* FAQ — visible content backing the FAQPage structured data */}
+        {/* FAQ — hairline-ruled Q&A, editorial voice */}
         <section aria-labelledby="faq-heading" className="mt-16">
           <h2
             id="faq-heading"
-            className="text-xl font-semibold tracking-tight text-ink"
+            className="text-xl font-bold tracking-tight text-ink"
           >
             Frequently asked questions
           </h2>
-          <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2">
+          <div className="mt-4 border-t border-line">
             {faqs.map((f) => (
               <div
                 key={f.q}
-                className="rounded-xl border border-line bg-surface p-5"
+                className="grid grid-cols-1 gap-x-10 gap-y-2 border-b border-line py-5 md:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]"
               >
-                <h3 className="text-sm font-semibold leading-snug text-ink">
+                <h3 className="text-[15px] font-semibold leading-snug text-ink">
                   {f.q}
                 </h3>
-                <p className="mt-2 text-sm leading-relaxed text-ink-secondary">
+                <p className="text-sm leading-relaxed text-ink-secondary">
                   {f.a}
                 </p>
               </div>
@@ -176,33 +177,32 @@ export default function Home() {
         </section>
       </main>
 
-      {/* Footer */}
-      <footer className="border-t border-line bg-surface">
-        <div className="mx-auto max-w-5xl px-4 py-8 text-sm leading-relaxed text-ink-muted">
-          <p>
-            Data is crowd-sourced and self-reported — treat figures as
-            approximate. Originally compiled by{" "}
+      {/* Ft4 · Dense colophon */}
+      <footer className="border-t border-line-strong bg-surface">
+        <div className="mx-auto max-w-5xl px-4 py-6">
+          <p className="font-mono text-xs leading-relaxed text-ink-muted">
+            {SITE.name}. Crowd-sourced and self-reported — treat every figure as
+            approximate. Data originally compiled by{" "}
             <a
               href={SITE.sourceUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="font-medium text-accent-strong hover:underline"
+              className="text-accent underline decoration-1 underline-offset-2 hover:text-accent-strong"
             >
               {SITE.sourceName}
             </a>
-            . Last synced {SITE.lastSynced}.
-          </p>
-          <p className="mt-2">
-            Spotted something wrong or missing?{" "}
+            ; last synced {SITE.lastSynced}. {stats.recordCount} records ·{" "}
+            {stats.universityCount} universities. Corrections and new entries
+            via{" "}
             <a
               href={SITE.submitFormUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="font-medium text-accent-strong hover:underline"
+              className="text-accent underline decoration-1 underline-offset-2 hover:text-accent-strong"
             >
-              Submit an update
+              the submission form
             </a>
-            .
+            . Set in Hanken Grotesk, Newsreader &amp; IBM Plex Mono.
           </p>
         </div>
       </footer>

@@ -1,21 +1,30 @@
 @import "tailwindcss";
 
+/* Hallmark · genre: editorial · macrostructure: Stat-Led · theme: Almanac ·
+ * enrichment: none · nav: N6 masthead · footer: Ft4 dense colophon ·
+ * tone: editorial (data-almanac) · anchor hue: 245–250 cool slate
+ * pre-emit critique: P4 H5 E4 S4 R5 V4 */
+
 :root {
-  /* Bright, light-only theme (user preference). color-scheme keeps native
-     form controls / scrollbars rendering in light style everywhere. */
+  /* Light-only (user lock). color-scheme keeps native UI bright. */
   color-scheme: light;
 
-  --background: #f6f9f8;
-  --surface: #ffffff;
-  --ink: #10201c;
-  --ink-secondary: #47605a;
-  --ink-muted: #6b807a;
-  --line: #dfe8e5;
-  --accent: #0d9488;
-  --accent-strong: #0f766e;
-  --accent-contrast: #ffffff;
-  --accent-wash: #e6f7f4;
-  --track: #d3efea;
+  /* Almanac palette — cool pale paper, slate accent, no pure white/black. */
+  --background: oklch(94% 0.008 245); /* paper */
+  --surface: oklch(97% 0.006 245); /* raised paper */
+  --ink: oklch(16% 0.02 245);
+  --ink-secondary: oklch(38% 0.016 245);
+  --ink-muted: oklch(46% 0.014 245);
+  --line: oklch(74% 0.012 240); /* hairline rule */
+  --line-strong: oklch(38% 0.018 240); /* double-rule / emphasis */
+  --accent: oklch(38% 0.135 250);
+  --accent-strong: oklch(30% 0.13 250);
+  --accent-contrast: oklch(96% 0.006 245);
+  --accent-wash: oklch(90% 0.03 250);
+  --track: oklch(86% 0.012 240);
+
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --dur-short: 220ms;
 }
 
 @theme inline {
@@ -25,17 +34,37 @@
   --color-ink-secondary: var(--ink-secondary);
   --color-ink-muted: var(--ink-muted);
   --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
   --color-accent: var(--accent);
   --color-accent-strong: var(--accent-strong);
   --color-accent-contrast: var(--accent-contrast);
   --color-accent-wash: var(--accent-wash);
   --color-track: var(--track);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-hanken);
+  --font-serif: var(--font-newsreader);
+  --font-mono: var(--font-plex-mono);
+}
+
+html,
+body {
+  overflow-x: clip;
 }
 
 body {
   background: var(--background);
   color: var(--ink);
   font-family: var(--font-sans), system-ui, -apple-system, sans-serif;
+}
+
+/* Tabular figures everywhere numbers align (Stat-Led discipline). */
+.tnum {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Double rule — the masthead's signature (N6). */
+.rule-double {
+  border: 0;
+  border-top: 1px solid var(--line-strong);
+  border-bottom: 1px solid var(--line-strong);
+  height: 4px;
 }

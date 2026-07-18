@@ -112,7 +112,7 @@ export default function SalaryExplorer({
               onChange={(e) => setQuery(e.target.value)}
               aria-label="Search salary records"
               placeholder="Search university, designation, city, benefits…"
-              className="h-10 w-full rounded-lg border border-line bg-surface pl-9 pr-3 text-sm text-ink outline-none transition placeholder:text-ink-muted focus:border-accent focus:ring-2 focus:ring-accent/25"
+              className="h-10 w-full border border-line bg-surface pl-9 pr-3 text-sm text-ink outline-none transition placeholder:text-ink-muted focus:border-accent focus:ring-2 focus:ring-accent/25"
             />
           </div>
 
@@ -145,16 +145,16 @@ export default function SalaryExplorer({
               onClick={() => setType(chip.value)}
               aria-pressed={type === chip.value}
               className={
-                "inline-flex h-8 items-center rounded-full px-3 text-xs font-medium outline-none transition focus-visible:ring-2 focus-visible:ring-accent/40 " +
+                "inline-flex h-8 items-center px-3 font-mono text-[11px] uppercase tracking-[0.06em] outline-none transition focus-visible:ring-2 focus-visible:ring-accent/40 " +
                 (type === chip.value
-                  ? "border border-transparent bg-accent text-accent-contrast"
-                  : "border border-line bg-surface text-ink-secondary hover:border-accent/50 hover:text-accent")
+                  ? "border border-accent bg-accent text-accent-contrast"
+                  : "border border-line bg-surface text-ink-secondary hover:border-accent hover:text-accent")
               }
             >
               {chip.label}
             </button>
           ))}
-          <span className="ml-auto text-xs tabular-nums text-ink-muted">
+          <span className="ml-auto font-mono text-[11px] uppercase tracking-[0.06em] tabular-nums text-ink-muted">
             Showing{" "}
             <span className="font-semibold text-ink">{filtered.length}</span> of{" "}
             {records.length}
@@ -164,7 +164,7 @@ export default function SalaryExplorer({
 
       {/* Results */}
       {filtered.length === 0 ? (
-        <div className="rounded-xl border border-dashed border-line bg-surface/50 py-16 text-center">
+        <div className="border border-dashed border-line bg-surface/50 py-16 text-center">
           <p className="text-sm text-ink-muted">
             No records match your search.
           </p>

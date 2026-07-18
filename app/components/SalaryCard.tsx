@@ -12,7 +12,7 @@ export default function SalaryCard({
   const facilityLines = record.facilities.split(" | ").filter(Boolean);
 
   return (
-    <article className="flex flex-col rounded-xl border border-line bg-surface p-5 transition hover:border-accent/40 hover:shadow-lg hover:shadow-accent/5">
+    <article className="flex flex-col border border-line bg-surface p-5 transition hover:border-line-strong">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <h3 className="font-semibold leading-tight text-ink">
@@ -23,7 +23,7 @@ export default function SalaryCard({
           </p>
         </div>
         {record.shortName && (
-          <span className="shrink-0 rounded-md border border-line px-1.5 py-0.5 font-mono text-[11px] font-medium text-ink-muted">
+          <span className="shrink-0 border border-line px-1.5 py-0.5 font-mono text-[11px] font-medium uppercase tracking-[0.06em] text-ink-muted">
             {record.shortName}
           </span>
         )}
@@ -33,14 +33,16 @@ export default function SalaryCard({
         {record.total !== null ? (
           <>
             <div className="flex items-baseline gap-2">
-              <span className="text-[26px] font-semibold leading-none tracking-tight text-ink">
+              <span className="tnum text-[26px] font-semibold leading-none tracking-tight text-ink">
                 {formatTaka(record.total)}
               </span>
-              <span className="text-xs text-ink-muted">/ month</span>
+              <span className="font-mono text-[11px] uppercase tracking-[0.06em] text-ink-muted">
+                / month
+              </span>
             </div>
-            <div className="mt-3 h-1 w-full overflow-hidden rounded-full bg-track">
+            <div className="mt-3 h-0.5 w-full bg-track">
               <div
-                className="h-full rounded-full bg-accent"
+                className="h-full bg-accent"
                 style={{
                   width: `${Math.max(4, Math.round((record.total / maxTotal) * 100))}%`,
                 }}
@@ -49,7 +51,7 @@ export default function SalaryCard({
           </>
         ) : (
           <div>
-            <span className="inline-flex items-center gap-1.5 rounded-md border border-amber-500/25 bg-amber-500/10 px-2 py-1 text-xs font-medium text-amber-700">
+            <span className="inline-flex items-center gap-1.5 border border-amber-500/25 bg-amber-500/10 px-2 py-1 text-xs font-medium text-amber-700">
               Pay varies — not a fixed monthly amount
             </span>
             {salaryLines.length > 0 && (

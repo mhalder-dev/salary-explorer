@@ -140,7 +140,7 @@ export default function Dropdown({
             openList();
           }
         }}
-        className="inline-flex h-10 w-full items-center justify-between gap-2 rounded-lg border border-line bg-surface pl-3 pr-2.5 text-sm text-ink outline-none transition hover:border-accent/50 focus-visible:border-accent focus-visible:ring-2 focus-visible:ring-accent/25"
+        className="inline-flex h-10 w-full items-center justify-between gap-2 border border-line bg-surface pl-3 pr-2.5 text-sm text-ink outline-none transition hover:border-accent focus-visible:border-accent focus-visible:ring-2 focus-visible:ring-accent/25"
       >
         <span className="truncate">{selected?.label}</span>
         <svg
@@ -162,7 +162,7 @@ export default function Dropdown({
           aria-label={ariaLabel}
           aria-activedescendant={`${id}-opt-${activeIndex}`}
           onKeyDown={onListKeyDown}
-          className="absolute left-0 top-[calc(100%+6px)] z-30 max-h-72 w-full min-w-44 overflow-auto rounded-xl border border-line bg-surface p-1.5 shadow-xl shadow-ink/8 outline-none"
+          className="absolute left-0 top-[calc(100%+4px)] z-30 max-h-72 w-full min-w-44 overflow-auto border border-line-strong bg-surface p-1 shadow-lg shadow-ink/10 outline-none"
         >
           {options.map((opt, i) => {
             const isSelected = i === selectedIndex;
@@ -176,7 +176,7 @@ export default function Dropdown({
                 onPointerMove={() => setActiveIndex(i)}
                 onClick={() => select(i)}
                 className={
-                  "flex cursor-pointer items-center justify-between gap-3 rounded-lg px-2.5 py-2 text-sm transition-colors " +
+                  "flex cursor-pointer items-center justify-between gap-3 px-2.5 py-2 text-sm transition-colors " +
                   (isActive ? "bg-accent-wash text-accent-strong " : "text-ink ") +
                   (isSelected ? "font-medium" : "")
                 }
