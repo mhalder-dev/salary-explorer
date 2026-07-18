@@ -1,0 +1,51 @@
+# Deploys the static export to GitHub Pages for free on every push to main.
+#
+# One-time setup in your GitHub repo:
+#   Settings → Pages → Build and deployment → Source: "GitHub Actions"
+#
+# This builds with NEXT_PUBLIC_BASE_PATH set to "/<repo-name>" so asset paths
+# work under https://<user>.github.io/<repo-name>/.
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - name: Build static export
+        env:
+          # Uses the repository name as the base path (e.g. "/salary-explorer").
+          NEXT_PUBLIC_BASE_PATH: /${{ github.event.repository.name }}
+        run: npm run build
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./out
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
