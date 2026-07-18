@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import type { SalaryRecord } from "@/lib/salaries";
 import { recordKey, updatedToSortKey } from "@/lib/format";
 import SalaryCard from "@/app/components/SalaryCard";
+import Dropdown from "@/app/components/Dropdown";
 
 type SortKey = "salary-desc" | "salary-asc" | "university-asc" | "updated-desc";
 
@@ -32,23 +33,6 @@ function employmentType(designation: string): Exclude<EmploymentType, "all"> | n
     return "part-time";
   if (d.includes("permanent")) return "permanent";
   return null; // designation doesn't specify
-}
-
-const SELECT_CLASS =
-  "h-10 w-full appearance-none rounded-lg border border-line bg-surface pl-3 pr-9 text-sm text-ink outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/25 sm:w-auto";
-
-function SelectChevron() {
-  return (
-    <svg
-      className="pointer-events-none absolute right-3 top-1/2 size-3.5 -translate-y-1/2 text-ink-muted"
-      viewBox="0 0 16 16"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.5"
-    >
-      <path d="m4 6 4 4 4-4" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
 }
 
 export default function SalaryExplorer({
@@ -132,38 +116,24 @@ export default function SalaryExplorer({
             />
           </div>
 
-          <div className="relative">
-            <select
-              value={location}
-              onChange={(e) => setLocation(e.target.value)}
-              className={SELECT_CLASS}
-              aria-label="Filter by location"
-            >
-              <option value="all">All locations</option>
-              {locations.map((loc) => (
-                <option key={loc} value={loc}>
-                  {loc}
-                </option>
-              ))}
-            </select>
-            <SelectChevron />
-          </div>
+          <Dropdown
+            ariaLabel="Filter by location"
+            className="sm:w-44"
+            value={location}
+            onChange={setLocation}
+            options={[
+              { value: "all", label: "All locations" },
+              ...locations.map((loc) => ({ value: loc, label: loc })),
+            ]}
+          />
 
-          <div className="relative">
-            <select
-              value={sort}
-              onChange={(e) => setSort(e.target.value as SortKey)}
-              className={SELECT_CLASS}
-              aria-label="Sort records"
-            >
-              {SORT_OPTIONS.map((o) => (
-                <option key={o.value} value={o.value}>
-                  {o.label}
-                </option>
-              ))}
-            </select>
-            <SelectChevron />
-          </div>
+          <Dropdown
+            ariaLabel="Sort records"
+            className="sm:w-48"
+            value={sort}
+            onChange={(v) => setSort(v as SortKey)}
+            options={SORT_OPTIONS}
+          />
         </div>
 
         {/* Employment-type chips */}

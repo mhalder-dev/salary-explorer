@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { SITE } from "@/lib/config";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -13,9 +14,41 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "BD Private University Faculty Salaries",
+  metadataBase: new URL(SITE.url),
+  title: {
+    default:
+      "Private University Faculty Salary in Bangladesh — Lecturer Pay Data (BD)",
+    template: `%s — ${SITE.name}`,
+  },
   description:
-    "Crowd-sourced, searchable monthly salary data for faculty at private universities in Bangladesh.",
+    "How much do lecturers earn at private universities in Bangladesh? Crowd-sourced monthly salary data for 50+ universities — NSU, BRAC, EWU, AUST, UIU and more. Search by university, city, and employment type; see basic pay, allowances, bonuses and benefits.",
+  keywords: [
+    "private university lecturer salary Bangladesh",
+    "faculty salary Bangladesh",
+    "university teacher salary BD",
+    "lecturer pay private university",
+    "NSU lecturer salary",
+    "BRAC University lecturer salary",
+    "assistant lecturer salary Bangladesh",
+    "university job salary BD",
+  ],
+  alternates: { canonical: "./" },
+  robots: { index: true, follow: true },
+  openGraph: {
+    type: "website",
+    url: SITE.url,
+    siteName: SITE.name,
+    title: "Private University Faculty Salaries in Bangladesh",
+    description:
+      "Searchable, crowd-sourced monthly salary data for faculty at 50+ private universities in Bangladesh.",
+    locale: "en_US",
+  },
+  twitter: {
+    card: "summary",
+    title: "Private University Faculty Salaries in Bangladesh",
+    description:
+      "Searchable, crowd-sourced monthly salary data for faculty at 50+ private universities in Bangladesh.",
+  },
 };
 
 export default function RootLayout({

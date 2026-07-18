@@ -1,0 +1,69 @@
+name: "💰 Submit / update salary information"
+description: "Share salary information for a faculty position at a Bangladeshi private university. Your submission will be reviewed and added to the site."
+title: "[Salary] <University name> — <Designation>"
+labels: ["salary-submission"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for contributing! All fields marked required must be filled.
+        Your submission is **anonymous with respect to the site** — only the
+        data below is published, never your identity.
+  - type: input
+    id: university
+    attributes:
+      label: University name
+      placeholder: "e.g. North South University"
+    validations:
+      required: true
+  - type: input
+    id: designation
+    attributes:
+      label: Designation
+      placeholder: "e.g. Lecturer, Assistant Lecturer, Lecturer (Contractual)"
+    validations:
+      required: true
+  - type: input
+    id: location
+    attributes:
+      label: Campus location (city/area)
+      placeholder: "e.g. Dhaka, Chattogram, Savar"
+    validations:
+      required: false
+  - type: textarea
+    id: salary
+    attributes:
+      label: Monthly salary breakdown
+      description: "Basic, allowances, and total if you know them. Ranges are fine. If pay is per-class/per-course, say so."
+      placeholder: |
+        Basic: 30k
+        House rent: 15k
+        Medical: 2k
+        Total: 47k
+    validations:
+      required: true
+  - type: textarea
+    id: facilities
+    attributes:
+      label: Bonuses, increments & other benefits
+      placeholder: "e.g. Eid bonus twice a year (full basic), 5% yearly increment, exam bills…"
+    validations:
+      required: false
+  - type: input
+    id: as-of
+    attributes:
+      label: Information as of (month & year)
+      placeholder: "e.g. July 2026"
+    validations:
+      required: true
+  - type: dropdown
+    id: confidence
+    attributes:
+      label: How do you know this?
+      options:
+        - I work/worked there
+        - From a colleague or friend who works there
+        - From an offer letter / interview
+        - Other
+    validations:
+      required: true

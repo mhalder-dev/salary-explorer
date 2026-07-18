@@ -2,14 +2,18 @@
 
 export const SITE = {
   name: "BD Faculty Salaries",
-  title: "Bangladesh Private University — Faculty Salaries",
+  title: "Private University Faculty Salaries in Bangladesh",
   tagline:
-    "Crowd-sourced, self-reported monthly salaries for faculty at private universities in Bangladesh.",
+    "Crowd-sourced, self-reported monthly salaries for lecturers and faculty at private universities in Bangladesh — searchable by university, city, and employment type.",
 
-  // Where the "Submit / Update salary info" button points.
-  // Replace this with your OWN Google Form or Tally form URL (see README.md).
-  // For now it points at the original crowd-sourcing page.
-  submitFormUrl: "https://asif-saad.github.io/blog/salary-by-faculty/",
+  /** Canonical production URL (no trailing slash). Used for SEO metadata + sitemap. */
+  url: "https://mhalder-dev.github.io/salary-explorer",
+
+  // Where the "Submit / update salary info" button points.
+  // Currently a structured GitHub Issue Form in this repo — submissions arrive
+  // as issues for review. Swap for a Google Form / Tally URL anytime.
+  submitFormUrl:
+    "https://github.com/mhalder-dev/salary-explorer/issues/new?template=salary-submission.yml",
 
   // Attribution for the underlying data.
   sourceName: "Asif Saad",

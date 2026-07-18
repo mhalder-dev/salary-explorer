@@ -49,7 +49,7 @@ export default function SalaryCard({
           </>
         ) : (
           <div>
-            <span className="inline-flex items-center gap-1.5 rounded-md border border-amber-500/25 bg-amber-500/10 px-2 py-1 text-xs font-medium text-amber-700 dark:text-amber-300">
+            <span className="inline-flex items-center gap-1.5 rounded-md border border-amber-500/25 bg-amber-500/10 px-2 py-1 text-xs font-medium text-amber-700">
               Pay varies — not a fixed monthly amount
             </span>
             {salaryLines.length > 0 && (
