@@ -46,9 +46,22 @@ export default function Dropdown({
     return () => document.removeEventListener("pointerdown", onPointerDown);
   }, [open]);
 
-  // Focus the listbox when it opens (active option is set at the open call site).
+  // Focus the listbox when it opens. preventScroll is essential: without it the
+  // browser auto-scrolls the focused list into view and the page visibly jumps.
   useEffect(() => {
-    if (open) listRef.current?.focus();
+    if (open) listRef.current?.focus({ preventScroll: true });
+  }, [open]);
+
+  // Close when the page (or any outer container) scrolls — matches native
+  // <select> behavior. Scrolling INSIDE the option list keeps it open.
+  useEffect(() => {
+    if (!open) return;
+    const onScroll = (e: Event) => {
+      if (e.target instanceof Node && listRef.current?.contains(e.target)) return;
+      setOpen(false);
+    };
+    window.addEventListener("scroll", onScroll, { capture: true, passive: true });
+    return () => window.removeEventListener("scroll", onScroll, { capture: true });
   }, [open]);
 
   const openList = () => {
@@ -56,12 +69,20 @@ export default function Dropdown({
     setOpen(true);
   };
 
-  // Keep the active option scrolled into view during keyboard navigation.
+  // Keep the active option visible during keyboard navigation by adjusting the
+  // list's own scrollTop only — scrollIntoView would also scroll the page.
   useEffect(() => {
     if (!open) return;
-    listRef.current
-      ?.querySelector(`#${CSS.escape(`${id}-opt-${activeIndex}`)}`)
-      ?.scrollIntoView({ block: "nearest" });
+    const list = listRef.current;
+    const el = list?.querySelector<HTMLElement>(
+      `#${CSS.escape(`${id}-opt-${activeIndex}`)}`,
+    );
+    if (!list || !el) return;
+    if (el.offsetTop < list.scrollTop) {
+      list.scrollTop = el.offsetTop;
+    } else if (el.offsetTop + el.offsetHeight > list.scrollTop + list.clientHeight) {
+      list.scrollTop = el.offsetTop + el.offsetHeight - list.clientHeight;
+    }
   }, [open, activeIndex, id]);
 
   const select = (index: number) => {
