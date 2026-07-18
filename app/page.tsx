@@ -7,26 +7,42 @@ export default function Home() {
   const stats = computeStats(salaries);
 
   const tiles = [
-    { label: "Records", value: stats.recordCount.toString() },
-    { label: "Universities", value: stats.universityCount.toString() },
-    { label: "Median monthly", value: formatTaka(stats.medianTotal) },
-    { label: "Highest monthly", value: formatTaka(stats.maxTotal) },
+    {
+      label: "Records",
+      value: stats.recordCount.toString(),
+      caption: "Self-reported entries",
+    },
+    {
+      label: "Universities",
+      value: stats.universityCount.toString(),
+      caption: "Institutions covered",
+    },
+    {
+      label: "Median monthly",
+      value: formatTaka(stats.medianTotal),
+      caption: "Across all records",
+    },
+    {
+      label: "Highest monthly",
+      value: formatTaka(stats.maxTotal),
+      caption: "Single reported record",
+    },
   ];
 
   return (
-    <div className="flex-1 bg-zinc-50 dark:bg-zinc-950">
+    <div className="flex-1 bg-background">
       {/* Hero */}
-      <header className="border-b border-black/5 bg-white dark:border-white/10 dark:bg-zinc-900">
-        <div className="mx-auto max-w-5xl px-4 py-12 sm:py-16">
-          <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
+      <header className="border-b border-line bg-surface">
+        <div className="mx-auto max-w-5xl px-4 pb-12 pt-12 sm:pt-16">
+          <div className="flex flex-col gap-8 sm:flex-row sm:items-start sm:justify-between">
             <div className="max-w-2xl">
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-indigo-50 px-3 py-1 text-xs font-medium text-indigo-700 dark:bg-indigo-500/10 dark:text-indigo-300">
-                🇧🇩 Bangladesh · Private universities
-              </span>
-              <h1 className="mt-4 text-3xl font-bold tracking-tight text-zinc-900 sm:text-4xl dark:text-zinc-50">
+              <p className="font-mono text-[11px] font-medium uppercase tracking-[0.22em] text-accent">
+                Bangladesh — Private universities
+              </p>
+              <h1 className="mt-4 text-3xl font-semibold tracking-tight text-ink sm:text-[2.6rem] sm:leading-[1.12]">
                 {SITE.title}
               </h1>
-              <p className="mt-3 text-base leading-relaxed text-zinc-600 dark:text-zinc-400">
+              <p className="mt-4 max-w-xl text-[15px] leading-relaxed text-ink-secondary">
                 {SITE.tagline}
               </p>
             </div>
@@ -35,7 +51,7 @@ export default function Home() {
               href={SITE.submitFormUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-lg bg-indigo-600 px-5 text-sm font-medium text-white shadow-sm transition hover:bg-indigo-500"
+              className="inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-lg bg-accent px-4 text-sm font-medium text-accent-contrast shadow-sm transition hover:bg-accent-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:ring-offset-2 focus-visible:ring-offset-surface"
             >
               <svg className="size-4" viewBox="0 0 16 16" fill="currentColor">
                 <path d="M8 1a.75.75 0 0 1 .75.75v5.5h5.5a.75.75 0 0 1 0 1.5h-5.5v5.5a.75.75 0 0 1-1.5 0v-5.5h-5.5a.75.75 0 0 1 0-1.5h5.5v-5.5A.75.75 0 0 1 8 1Z" />
@@ -44,18 +60,22 @@ export default function Home() {
             </a>
           </div>
 
-          {/* Stat tiles */}
-          <dl className="mt-10 grid grid-cols-2 gap-3 sm:grid-cols-4">
+          {/* Stat strip */}
+          <dl className="mt-12 grid grid-cols-2 gap-x-6 gap-y-8 sm:grid-cols-4">
             {tiles.map((t) => (
-              <div
-                key={t.label}
-                className="rounded-xl border border-black/5 bg-zinc-50 p-4 dark:border-white/10 dark:bg-white/[0.03]"
-              >
-                <dt className="text-xs font-medium uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
+              <div key={t.label} className="flex flex-col">
+                <dd className="order-2 mt-3 text-[26px] font-semibold leading-none tracking-tight text-accent">
+                  {t.value}
+                </dd>
+                <dt className="order-1 text-[11px] font-medium uppercase tracking-[0.14em] text-ink-secondary">
+                  <span
+                    aria-hidden
+                    className="mb-2.5 block h-0.5 w-6 rounded-full bg-accent"
+                  />
                   {t.label}
                 </dt>
-                <dd className="mt-1 text-xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
-                  {t.value}
+                <dd className="order-3 mt-1.5 text-xs text-ink-muted">
+                  {t.caption}
                 </dd>
               </div>
             ))}
@@ -69,8 +89,8 @@ export default function Home() {
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-black/5 bg-white dark:border-white/10 dark:bg-zinc-900">
-        <div className="mx-auto max-w-5xl px-4 py-8 text-sm text-zinc-500 dark:text-zinc-400">
+      <footer className="border-t border-line bg-surface">
+        <div className="mx-auto max-w-5xl px-4 py-8 text-sm leading-relaxed text-ink-muted">
           <p>
             Data is crowd-sourced and self-reported — treat figures as
             approximate. Originally compiled by{" "}
@@ -78,7 +98,7 @@ export default function Home() {
               href={SITE.sourceUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="font-medium text-indigo-600 hover:underline dark:text-indigo-400"
+              className="font-medium text-accent hover:text-accent-strong hover:underline"
             >
               {SITE.sourceName}
             </a>
@@ -90,7 +110,7 @@ export default function Home() {
               href={SITE.submitFormUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="font-medium text-indigo-600 hover:underline dark:text-indigo-400"
+              className="font-medium text-accent hover:text-accent-strong hover:underline"
             >
               Submit an update
             </a>
