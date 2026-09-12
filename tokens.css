@@ -1,27 +1,43 @@
-/* Hallmark · portable token copy — theme: Almanac (light-only) ·
- * source of truth lives in app/globals.css :root. Keep in sync. */
+/* "Instrument" · portable token copy — source of truth is app/globals.css :root.
+ * Keep in sync. Premise: a salary is a measurement, so the site is a measuring
+ * device — bone paper for reading matter, a black slab for the instrument, and
+ * one acid-lime signal colour that only ever means "data". */
 :root {
-  --color-paper: oklch(94% 0.008 245);
-  --color-surface: oklch(97% 0.006 245);
-  --color-ink: oklch(16% 0.02 245);
-  --color-ink-2: oklch(38% 0.016 245);
-  --color-muted: oklch(46% 0.014 245);
-  --color-rule: oklch(74% 0.012 240);
-  --color-rule-2: oklch(38% 0.018 240);
-  --color-accent: oklch(38% 0.135 250);
-  --color-accent-strong: oklch(30% 0.13 250);
-  --color-accent-ink: oklch(96% 0.006 245);
-  --color-accent-wash: oklch(90% 0.03 250);
-  --color-track: oklch(86% 0.012 240);
+  /* Paper */
+  --color-paper: oklch(96.2% 0.013 92);
+  --color-paper-2: oklch(93.2% 0.017 92);
+  --color-ink: oklch(18% 0.014 92);
+  --color-ink-2: oklch(38% 0.012 92);
+  --color-ink-3: oklch(45% 0.012 92);
+  --color-rule: oklch(84% 0.012 92);
+  --color-rule-2: oklch(22% 0.014 92);
 
-  --font-display: "Hanken Grotesk", ui-sans-serif, sans-serif;
-  --font-body: "Hanken Grotesk", ui-sans-serif, sans-serif;
-  --font-serif: "Newsreader", ui-serif, Georgia, serif;
-  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+  /* Slab */
+  --color-slab: oklch(19.5% 0.021 155);
+  --color-slab-2: oklch(26% 0.024 155);
+  --color-bar-idle: oklch(36% 0.035 152);
+  --color-slab-ink: oklch(95% 0.012 120);
+  --color-slab-ink-2: oklch(72% 0.016 150);
+  --color-slab-rule: oklch(33% 0.022 155);
+
+  /* Signal */
+  --color-signal: oklch(86% 0.195 128);
+  --color-signal-dim: oklch(62% 0.14 130);
+  --color-signal-ink: oklch(20% 0.05 128);
+  --color-wash: oklch(92% 0.135 120);
+  --color-wash-soft: oklch(95.6% 0.055 118);
+  --color-accent: oklch(42% 0.115 150);
+  --color-accent-strong: oklch(32% 0.10 150);
+  --color-flag: oklch(58% 0.14 55);
+
+  --font-display: "Bricolage Grotesque", ui-sans-serif, sans-serif;
+  --font-body: "Instrument Sans", ui-sans-serif, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+  --font-bengali: "Noto Sans Bengali", sans-serif; /* carries ৳ (U+09F3) */
 
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
-  --dur-short: 220ms;
+  --dur-short: 240ms;
   --radius-card: 0;
-  --radius-pill: 0;
   --radius-input: 0;
+  --radius-pill: 9999px; /* the one deliberate exception: the submit key */
 }

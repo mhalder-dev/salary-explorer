@@ -1,23 +1,42 @@
 import SalaryExplorer from "@/app/components/SalaryExplorer";
-import StatFigure from "@/app/components/StatFigure";
+import Scope from "@/app/components/Scope";
 import { SITE } from "@/lib/config";
 import { salaries } from "@/lib/salaries";
-import { computeStats, formatTaka } from "@/lib/format";
+import {
+  buildHistogram,
+  computeStats,
+  formatTaka,
+  scopeMarks,
+} from "@/lib/format";
 
 export default function Home() {
   const stats = computeStats(salaries);
+  const buckets = buildHistogram(salaries);
+  const marks = scopeMarks(salaries);
 
   const monthly = salaries.filter((r) => r.total !== null);
   const highest = monthly.reduce((a, b) => ((a.total ?? 0) >= (b.total ?? 0) ? a : b));
+  const nonMonthly = salaries.length - monthly.length;
+  const topMultiple = (stats.maxTotal / stats.medianTotal).toFixed(1);
 
-  const supporting = [
-    { label: "Records", value: stats.recordCount.toString() },
-    { label: "Universities", value: stats.universityCount.toString() },
+  // Readings — three findings, written out. A wall of equal-weight stat tiles
+  // says nothing; these say what the data actually shows.
+  const readings = [
     {
-      label: "Reported range",
-      value: `${formatTaka(stats.minTotal)}–${formatTaka(stats.maxTotal)}`,
+      label: "The middle",
+      figure: formatTaka(stats.medianTotal),
+      note: `Half of every reported lecturer salary falls below this line. The single densest band sits between ${formatTaka(30_000)} and ${formatTaka(42_500)} — that is where most of the profession lives.`,
     },
-    { label: "Highest reported", value: formatTaka(stats.maxTotal) },
+    {
+      label: "The ceiling",
+      figure: formatTaka(stats.maxTotal),
+      note: `${highest.shortName ?? highest.university}, ${highest.designation.toLowerCase()} — ${topMultiple}× the median. Only a handful of reports clear ${formatTaka(80_000)}, and the distribution above it is almost empty.`,
+    },
+    {
+      label: "The floor",
+      figure: formatTaka(stats.minTotal),
+      note: `The lowest fixed monthly figure on record. A further ${nonMonthly} entries are not monthly at all — they are paid per course or per semester, so they sit outside the median entirely.`,
+    },
   ];
 
   const faqs = [
@@ -35,7 +54,7 @@ export default function Home() {
     },
     {
       q: "How can I add or correct salary information?",
-      a: "Use the “Submit / update info” link in the masthead. It opens a structured submission form — your entry is reviewed and then added to the dataset.",
+      a: "Use the “Add a salary” button in the header. It opens a structured submission form — your entry is reviewed and then added to the dataset.",
     },
   ];
 
@@ -76,99 +95,151 @@ export default function Home() {
   };
 
   return (
-    <div className="flex-1 bg-background">
+    <div className="flex-1">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      {/* N6 · Newspaper masthead */}
-      <header className="px-4 pt-8">
-        <div className="mx-auto max-w-5xl text-center">
-          <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-ink-muted">
-            A crowd-sourced reference · {stats.recordCount} records ·{" "}
-            {stats.universityCount} universities · synced {SITE.lastSynced}
-          </p>
-          <h1 className="mt-3 font-sans text-[clamp(1.9rem,5vw,3.4rem)] font-bold leading-[0.98] tracking-[-0.014em] text-ink">
-            {SITE.title}
-          </h1>
-          <nav aria-label="Primary" className="mt-3">
-            <a
-              href={SITE.submitFormUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="font-mono text-xs uppercase tracking-[0.08em] text-accent underline decoration-1 underline-offset-4 transition hover:text-accent-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40"
-            >
-              Submit / update info
-            </a>
-          </nav>
-          <hr className="rule-double mt-5" aria-hidden="true" />
-        </div>
+      {/* ── Header ───────────────────────────────────────────────────────── */}
+      <header className="mx-auto flex max-w-5xl items-center justify-between gap-4 px-4 py-4">
+        <a
+          href="#top"
+          className="group flex items-center gap-2.5 no-underline"
+          aria-label={SITE.name}
+        >
+          <span
+            aria-hidden="true"
+            className="size-3 bg-signal ring-1 ring-rule-2 transition group-hover:rotate-45"
+          />
+          <span className="font-mono text-[11px] font-medium uppercase tracking-[0.2em] text-ink">
+            BD Faculty Salaries
+          </span>
+        </a>
+        <a
+          href={SITE.submitFormUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex h-8 items-center rounded-full border-2 border-rule-2 bg-signal px-4 font-mono text-[10px] font-medium uppercase tracking-[0.14em] text-signal-ink transition hover:-translate-y-px hover:shadow-[0_3px_0_0_var(--rule-2)]"
+        >
+          Add a salary +
+        </a>
       </header>
 
-      {/* Stat-Led hero — the median is the story */}
-      <section className="px-4 pb-4 pt-10 sm:pt-14" aria-labelledby="lead-stat">
-        <div className="mx-auto grid max-w-5xl grid-cols-1 items-end gap-x-10 gap-y-6 sm:grid-cols-[auto_1fr]">
-          <div>
-            <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-ink-muted">
-              Median monthly
-            </p>
-            <p
-              id="lead-stat"
-              className="mt-1 text-[clamp(4rem,12vw,8.5rem)] font-bold leading-none tracking-[-0.02em] text-ink"
-            >
-              <StatFigure value={stats.medianTotal} prefix="৳" />
-            </p>
-          </div>
-          <div className="max-w-md sm:pb-3">
-            <p className="font-serif text-lg leading-snug text-ink-secondary sm:text-xl">
-              — what a lecturer at a private university in Bangladesh reports
-              taking home each month. Self-reported, approximate, and searchable
-              below.
-            </p>
+      {/* ── The slab: headline + the scope ───────────────────────────────── */}
+      <section
+        id="top"
+        className="grain gridlines relative overflow-hidden border-y-2 border-rule-2 bg-slab"
+      >
+        <div className="relative z-10 mx-auto max-w-5xl px-4 pb-14 pt-12 sm:pt-16">
+          <p className="flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-[10px] uppercase tracking-[0.2em] text-slab-ink-2">
+            <span className="text-signal">Crowd-sourced · unofficial</span>
+            <span
+              aria-hidden="true"
+              className="hidden h-2.5 w-px bg-slab-ink-2/50 sm:block"
+            />
+            <span className="tnum">
+              {stats.recordCount} records · {stats.universityCount} universities
+              · synced {SITE.lastSynced}
+            </span>
+          </p>
+
+          {/* Line breaks are set by hand: the marker swipe only reads as a
+              gesture when it lands on a whole line of its own. */}
+          <h1 className="display mt-6 text-[clamp(2.1rem,8.4vw,5.4rem)] font-extrabold leading-[0.98] text-slab-ink">
+            <span className="block">Private university</span>
+            <span className="hl hl-slab inline-block text-signal-ink">
+              faculty salaries
+            </span>
+            <span className="block">in Bangladesh</span>
+          </h1>
+
+          <p className="mt-6 max-w-xl text-[15px] leading-relaxed text-slab-ink-2 sm:text-base">
+            {stats.recordCount} pay packets, reported by the people receiving
+            them. Not a pay scale — a picture of what the job actually pays, and
+            how far apart the top and the bottom of it really are.
+          </p>
+
+          <div className="mt-12 sm:mt-16">
+            <Scope
+              buckets={buckets}
+              marks={marks}
+              median={stats.medianTotal}
+            />
           </div>
         </div>
-
-        {/* Supporting stats — hairline-ruled columns, tabular figures */}
-        <dl className="mx-auto mt-10 grid max-w-5xl grid-cols-2 border-t border-line sm:grid-cols-4">
-          {supporting.map((s) => (
-            <div
-              key={s.label}
-              className="border-b border-line px-1 py-4 sm:border-b-0"
-            >
-              <dt className="font-mono text-[11px] uppercase tracking-[0.14em] text-ink-muted">
-                {s.label}
-              </dt>
-              <dd className="tnum mt-1.5 text-lg font-semibold text-ink">
-                {s.value}
-              </dd>
-            </div>
-          ))}
-        </dl>
       </section>
 
-      {/* The tool */}
-      <main className="mx-auto max-w-5xl px-4 pb-8">
+      {/* ── Readings ─────────────────────────────────────────────────────── */}
+      <section aria-labelledby="readings-heading" className="mx-auto max-w-5xl px-4 py-14">
+        <h2
+          id="readings-heading"
+          className="font-mono text-[10px] uppercase tracking-[0.22em] text-ink-3"
+        >
+          Three readings
+        </h2>
+        <div className="mt-5 grid gap-px border-t-2 border-rule-2 bg-rule sm:grid-cols-3">
+          {readings.map((r) => (
+            <div
+              key={r.label}
+              className="bg-paper pb-5 pr-4 pt-5 sm:pl-4 sm:first:pl-0"
+            >
+              <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-accent">
+                {r.label}
+              </p>
+              <p className="display mt-2 text-[clamp(2rem,5vw,2.9rem)] font-bold leading-none text-ink tnum">
+                <span className="taka font-normal">
+                  {r.figure.slice(0, 1)}
+                </span>
+                {r.figure.slice(1)}
+              </p>
+              <p className="mt-3 max-w-[34ch] text-[13.5px] leading-relaxed text-ink-2">
+                {r.note}
+              </p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ── The ladder ───────────────────────────────────────────────────── */}
+      <main>
+        <div className="mx-auto max-w-5xl px-4 pb-5">
+          <h2 className="display text-[clamp(1.6rem,4vw,2.2rem)] font-bold leading-tight tracking-tight text-ink">
+            Every record, ranked
+          </h2>
+          <p className="mt-1.5 max-w-lg text-[14px] leading-relaxed text-ink-2">
+            The shaded bar behind each row is that salary drawn to scale against
+            the highest one reported. Open a row for the breakdown, bonuses and
+            benefits.
+          </p>
+        </div>
+
         <SalaryExplorer records={salaries} maxTotal={stats.maxTotal} />
 
-        {/* FAQ — hairline-ruled Q&A, editorial voice */}
-        <section aria-labelledby="faq-heading" className="mt-16">
+        {/* ── FAQ ────────────────────────────────────────────────────────── */}
+        <section
+          aria-labelledby="faq-heading"
+          className="mx-auto max-w-5xl px-4 pb-16 pt-20"
+        >
           <h2
             id="faq-heading"
-            className="text-xl font-bold tracking-tight text-ink"
+            className="display text-[clamp(1.6rem,4vw,2.2rem)] font-bold leading-tight tracking-tight text-ink"
           >
-            Frequently asked questions
+            Questions people ask
           </h2>
-          <div className="mt-4 border-t border-line">
-            {faqs.map((f) => (
+          <div className="mt-6 border-t-2 border-rule-2">
+            {faqs.map((f, i) => (
               <div
                 key={f.q}
-                className="grid grid-cols-1 gap-x-10 gap-y-2 border-b border-line py-5 md:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]"
+                className="grid grid-cols-[2rem_minmax(0,1fr)] gap-x-3 border-b border-rule py-6 sm:gap-x-5 md:grid-cols-[2rem_minmax(0,2fr)_minmax(0,3fr)]"
               >
-                <h3 className="text-[15px] font-semibold leading-snug text-ink">
+                <span className="font-mono text-[11px] text-accent tnum">
+                  {String(i + 1).padStart(2, "0")}
+                </span>
+                <h3 className="display text-[16px] font-semibold leading-snug text-ink">
                   {f.q}
                 </h3>
-                <p className="text-sm leading-relaxed text-ink-secondary">
+                <p className="col-start-2 mt-2 text-[14px] leading-relaxed text-ink-2 md:col-start-3 md:mt-0">
                   {f.a}
                 </p>
               </div>
@@ -177,32 +248,45 @@ export default function Home() {
         </section>
       </main>
 
-      {/* Ft4 · Dense colophon */}
-      <footer className="border-t border-line-strong bg-surface">
-        <div className="mx-auto max-w-5xl px-4 py-6">
-          <p className="font-mono text-xs leading-relaxed text-ink-muted">
-            {SITE.name}. Crowd-sourced and self-reported — treat every figure as
-            approximate. Data originally compiled by{" "}
-            <a
-              href={SITE.sourceUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-accent underline decoration-1 underline-offset-2 hover:text-accent-strong"
-            >
-              {SITE.sourceName}
-            </a>
-            ; last synced {SITE.lastSynced}. {stats.recordCount} records ·{" "}
-            {stats.universityCount} universities. Corrections and new entries
-            via{" "}
+      {/* ── Colophon ─────────────────────────────────────────────────────── */}
+      <footer className="grain relative border-t-2 border-rule-2 bg-slab">
+        <div className="relative z-10 mx-auto max-w-5xl px-4 py-10">
+          <div className="flex flex-wrap items-start justify-between gap-6">
+            <div className="max-w-xl">
+              <p className="display text-xl font-bold text-slab-ink">
+                Know a figure that is missing or wrong?
+              </p>
+              <p className="mt-1.5 text-[14px] leading-relaxed text-slab-ink-2">
+                Every row here came from somebody who filled in the form. One
+                more entry makes the next person&rsquo;s picture sharper.
+              </p>
+            </div>
             <a
               href={SITE.submitFormUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-accent underline decoration-1 underline-offset-2 hover:text-accent-strong"
+              className="inline-flex h-10 items-center rounded-full bg-signal px-5 font-mono text-[11px] font-medium uppercase tracking-[0.14em] text-signal-ink transition hover:-translate-y-px hover:shadow-[0_0_28px_-2px_var(--signal-dim)]"
             >
-              the submission form
+              Add a salary +
             </a>
-            . Set in Hanken Grotesk, Newsreader &amp; IBM Plex Mono.
+          </div>
+
+          <p className="mt-10 border-t border-slab-rule pt-5 font-mono text-[11px] leading-relaxed tracking-[0.02em] text-slab-ink-2">
+            {SITE.name} · every figure is crowd-sourced, self-reported and
+            approximate — check it before you negotiate with it. Data originally
+            compiled by{" "}
+            <a
+              href={SITE.sourceUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-signal underline decoration-dotted underline-offset-4 hover:text-slab-ink"
+            >
+              {SITE.sourceName}
+            </a>
+            ; last synced {SITE.lastSynced}. {stats.recordCount} records ·{" "}
+            {stats.universityCount} universities · {marks.length} monthly figures
+            plotted. Set in Bricolage Grotesque, Instrument Sans &amp; JetBrains
+            Mono.
           </p>
         </div>
       </footer>

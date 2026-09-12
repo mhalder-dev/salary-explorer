@@ -71,3 +71,51 @@ export function computeStats(records: SalaryRecord[]): DatasetStats {
 export function recordKey(r: SalaryRecord, index: number): string {
   return `${r.university}-${r.designation}-${index}`;
 }
+
+/* --------------------------------------------------------------------------
+ * The scope (interactive distribution) — domain + derived series.
+ * Everything below is computed on the server and handed to the client as plain
+ * data, so the histogram is in the static HTML for crawlers and no-JS readers.
+ * ------------------------------------------------------------------------ */
+
+/** Axis domain of the scope. 2,500-taka buckets expose the round-number spikes
+ *  (30k / 35k / 40k) that a coarser binning would smooth away. */
+export const SCOPE = { min: 20_000, max: 110_000, bucket: 2_500 } as const;
+
+export interface Bucket {
+  from: number;
+  to: number;
+  count: number;
+}
+
+export function buildHistogram(records: SalaryRecord[]): Bucket[] {
+  const n = (SCOPE.max - SCOPE.min) / SCOPE.bucket;
+  const buckets: Bucket[] = Array.from({ length: n }, (_, i) => ({
+    from: SCOPE.min + i * SCOPE.bucket,
+    to: SCOPE.min + (i + 1) * SCOPE.bucket,
+    count: 0,
+  }));
+  for (const r of records) {
+    if (r.total === null) continue;
+    const i = Math.min(
+      n - 1,
+      Math.max(0, Math.floor((r.total - SCOPE.min) / SCOPE.bucket)),
+    );
+    buckets[i].count++;
+  }
+  return buckets;
+}
+
+/** One plotted salary, light enough to ship to the client for the scope. */
+export interface ScopeMark {
+  name: string;
+  total: number;
+}
+
+/** Monthly totals ascending, paired with their university. */
+export function scopeMarks(records: SalaryRecord[]): ScopeMark[] {
+  return records
+    .filter((r): r is SalaryRecord & { total: number } => r.total !== null)
+    .map((r) => ({ name: r.shortName ?? r.university, total: r.total }))
+    .sort((a, b) => a.total - b.total);
+}

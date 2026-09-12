@@ -1,146 +1,198 @@
 import type { SalaryRecord } from "@/lib/salaries";
 import { formatTaka, formatTakaShort } from "@/lib/format";
 
+/**
+ * One rung of the ladder.
+ *
+ * Not a card — a full-width ranked row with the salary drawn to scale as a
+ * highlighter wash behind it, so 50 rows read as a chart you can scan rather
+ * than 50 boxes you have to compare by hand. Expands in place.
+ */
 export default function SalaryCard({
   record,
   maxTotal,
+  rank,
 }: {
   record: SalaryRecord;
   maxTotal: number;
+  /** Position in the whole dataset by pay, 1 = highest. null when pay isn't monthly. */
+  rank: number | null;
 }) {
   const salaryLines = record.rawSalary.split(" | ").filter(Boolean);
   const facilityLines = record.facilities.split(" | ").filter(Boolean);
+  const expandable =
+    facilityLines.length > 0 ||
+    salaryLines.length > 1 ||
+    record.basic != null ||
+    record.total === null;
+
+  const width =
+    record.total !== null
+      ? Math.max(3, Math.round((record.total / maxTotal) * 100))
+      : 0;
+
+  const meta = "font-mono text-[10px] uppercase tracking-[0.1em] text-ink-3";
+
+  const head = (
+    <>
+      {/* value drawn to scale, behind everything */}
+      <div
+        aria-hidden="true"
+        className="absolute inset-y-0 left-0 bg-wash-soft transition-colors duration-200 group-hover:bg-wash group-open:bg-wash"
+        style={{ width: `${width}%` }}
+      />
+      {record.total === null && (
+        <div
+          aria-hidden="true"
+          className="hatch absolute inset-y-0 left-0 w-[12%] opacity-40"
+        />
+      )}
+
+      <span className="relative z-10 pt-0.5 font-mono text-[11px] font-medium tracking-[0.04em] text-ink-3 tnum">
+        {rank !== null ? String(rank).padStart(2, "0") : "··"}
+      </span>
+
+      <span className="relative z-10 min-w-0">
+        <span className="flex items-baseline gap-2">
+          <span className="display truncate text-[15px] font-semibold leading-snug text-ink sm:text-base">
+            {record.university}
+          </span>
+          {record.shortName && (
+            <span
+              className={`shrink-0 border border-rule-2/25 px-1 py-px text-ink-2 ${meta}`}
+            >
+              {record.shortName}
+            </span>
+          )}
+        </span>
+        <span className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-[12.5px] leading-snug text-ink-2">
+          <span>{record.designation}</span>
+          {record.location && (
+            <>
+              <span aria-hidden="true" className="text-ink-3/45">
+                ·
+              </span>
+              <span className={meta}>{record.location}</span>
+            </>
+          )}
+          <span aria-hidden="true" className="text-ink-3/45">
+            ·
+          </span>
+          <span className={meta}>upd. {record.lastUpdated}</span>
+        </span>
+      </span>
+
+      <span className="relative z-10 pt-0.5 text-right">
+        {record.total !== null ? (
+          <span className="display text-[19px] font-bold leading-none text-ink tnum sm:text-[23px]">
+            <span className="taka font-normal">৳</span>
+            {record.total.toLocaleString("en-US")}
+          </span>
+        ) : (
+          <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-flag">
+            not monthly
+          </span>
+        )}
+      </span>
+    </>
+  );
+
+  const shell =
+    "relative grid grid-cols-[1.9rem_minmax(0,1fr)_auto_0.9rem] items-start gap-x-3 px-3 py-3 sm:gap-x-5 sm:px-4";
+
+  if (!expandable) {
+    return (
+      <article className="group relative border-b border-rule">
+        <div className={shell}>
+          {head}
+          <span />
+        </div>
+      </article>
+    );
+  }
 
   return (
-    <article className="flex flex-col border border-line bg-surface p-5 transition hover:border-line-strong">
-      <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0">
-          <h3 className="font-semibold leading-tight text-ink">
-            {record.university}
-          </h3>
-          <p className="mt-1 text-sm text-ink-secondary">
-            {record.designation}
-          </p>
-        </div>
-        {record.shortName && (
-          <span className="shrink-0 border border-line px-1.5 py-0.5 font-mono text-[11px] font-medium uppercase tracking-[0.06em] text-ink-muted">
-            {record.shortName}
-          </span>
-        )}
-      </div>
-
-      <div className="mt-4">
-        {record.total !== null ? (
-          <>
-            <div className="flex items-baseline gap-2">
-              <span className="tnum text-[26px] font-semibold leading-none tracking-tight text-ink">
-                {formatTaka(record.total)}
-              </span>
-              <span className="font-mono text-[11px] uppercase tracking-[0.06em] text-ink-muted">
-                / month
-              </span>
-            </div>
-            <div className="mt-3 h-0.5 w-full bg-track">
-              <div
-                className="h-full bg-accent"
-                style={{
-                  width: `${Math.max(4, Math.round((record.total / maxTotal) * 100))}%`,
-                }}
-              />
-            </div>
-          </>
-        ) : (
-          <div>
-            <span className="inline-flex items-center gap-1.5 border border-amber-500/25 bg-amber-500/10 px-2 py-1 text-xs font-medium text-amber-700">
-              Pay varies — not a fixed monthly amount
-            </span>
-            {salaryLines.length > 0 && (
-              <p className="mt-2 text-sm font-medium leading-snug text-ink">
-                {salaryLines.join(" · ")}
-              </p>
-            )}
-          </div>
-        )}
-      </div>
-
-      <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-ink-muted">
-        {record.location && (
-          <span className="inline-flex items-center gap-1">
-            <svg className="size-3.5" viewBox="0 0 16 16" fill="currentColor">
-              <path d="M8 1a5 5 0 0 0-5 5c0 3.5 5 9 5 9s5-5.5 5-9a5 5 0 0 0-5-5Zm0 7a2 2 0 1 1 0-4 2 2 0 0 1 0 4Z" />
-            </svg>
-            {record.location}
-          </span>
-        )}
-        <span className="inline-flex items-center gap-1">
-          <svg className="size-3.5" viewBox="0 0 16 16" fill="currentColor">
-            <path d="M8 3.5a.75.75 0 0 1 .75.75v3.19l2.03 2.03a.75.75 0 1 1-1.06 1.06L7.47 8.53A.75.75 0 0 1 7.25 8V4.25A.75.75 0 0 1 8 3.5Z" />
-            <path d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0ZM1.5 8a6.5 6.5 0 1 1 13 0 6.5 6.5 0 0 1-13 0Z" />
-          </svg>
-          Updated {record.lastUpdated}
+    <details className="group relative border-b border-rule">
+      <summary
+        className={`${shell} cursor-pointer list-none [&::-webkit-details-marker]:hidden`}
+      >
+        {head}
+        <span
+          aria-hidden="true"
+          className="relative z-10 inline-block pt-0.5 text-right font-mono text-[14px] leading-none text-ink-3 transition group-hover:text-accent group-open:rotate-45"
+        >
+          +
         </span>
-      </div>
+      </summary>
 
-      {(record.total !== null && (salaryLines.length > 1 || facilityLines.length > 0)) ||
-      (record.total === null && facilityLines.length > 0) ? (
-        <details className="group mt-4 border-t border-line pt-3">
-          <summary className="inline-flex cursor-pointer list-none items-center gap-1 text-xs font-medium text-accent transition hover:text-accent-strong [&::-webkit-details-marker]:hidden">
-            <svg
-              className="size-3 transition-transform group-open:rotate-90"
-              viewBox="0 0 16 16"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.8"
-            >
-              <path d="m6 4 4 4-4 4" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-            Breakdown &amp; benefits
-          </summary>
-          <div className="mt-3 space-y-3 text-xs text-ink-secondary">
-            {record.basic != null && (
-              <div className="flex gap-4">
-                <span>
-                  <span className="text-ink-muted">Basic </span>
-                  <span className="font-medium text-ink">
-                    {formatTakaShort(record.basic)}
-                  </span>
-                </span>
-                {record.allowances != null && (
-                  <span>
-                    <span className="text-ink-muted">Allowances </span>
-                    <span className="font-medium text-ink">
-                      {formatTakaShort(record.allowances)}
-                    </span>
-                  </span>
-                )}
-              </div>
-            )}
-            {record.total !== null && salaryLines.length > 1 && (
-              <ul className="space-y-1">
-                {salaryLines.map((line) => (
-                  <li key={line} className="flex gap-2">
-                    <span className="mt-1.5 size-1 shrink-0 rounded-full bg-ink-muted/60" />
-                    <span className="text-ink-muted">{line}</span>
-                  </li>
-                ))}
-              </ul>
-            )}
-            {facilityLines.length > 0 && (
-              <div>
-                <p className="mb-1 font-medium text-ink-muted">Benefits</p>
-                <ul className="space-y-1">
-                  {facilityLines.map((line) => (
-                    <li key={line} className="flex gap-2 leading-relaxed">
-                      <span className="mt-1.5 size-1 shrink-0 rounded-full bg-accent" />
+      <div className="relative z-10 border-t border-dashed border-rule bg-paper-2/60 px-3 py-4 sm:px-4 sm:pl-[3.15rem]">
+        <div className="grid gap-5 md:grid-cols-2">
+          {(record.basic != null || salaryLines.length > 0) && (
+            <div>
+              <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-ink-3">
+                Breakdown
+              </p>
+              {record.basic != null && (
+                <dl className="mt-2 flex flex-wrap gap-x-6 gap-y-1 text-[13px]">
+                  <div className="flex items-baseline gap-1.5">
+                    <dt className="text-ink-3">Basic</dt>
+                    <dd className="font-semibold text-ink tnum">
+                      {formatTakaShort(record.basic)}
+                    </dd>
+                  </div>
+                  {record.allowances != null && (
+                    <div className="flex items-baseline gap-1.5">
+                      <dt className="text-ink-3">Allowances</dt>
+                      <dd className="font-semibold text-ink tnum">
+                        {formatTakaShort(record.allowances)}
+                      </dd>
+                    </div>
+                  )}
+                </dl>
+              )}
+              {salaryLines.length > 0 && (
+                <ul className="mt-2 space-y-1 text-[13px] leading-relaxed text-ink-2">
+                  {salaryLines.map((line) => (
+                    <li key={line} className="flex gap-2">
+                      <span className="mt-[0.55em] h-px w-2 shrink-0 bg-ink-3" />
                       <span>{line}</span>
                     </li>
                   ))}
                 </ul>
-              </div>
-            )}
-          </div>
-        </details>
-      ) : null}
-    </article>
+              )}
+              {record.total === null && (
+                <p className="mt-2 text-[13px] leading-relaxed text-ink-2">
+                  Reported as per-course or per-semester pay, so it is excluded
+                  from the median and the scope above.
+                </p>
+              )}
+            </div>
+          )}
+
+          {facilityLines.length > 0 && (
+            <div>
+              <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-ink-3">
+                Bonuses &amp; benefits
+              </p>
+              <ul className="mt-2 space-y-1.5 text-[13px] leading-relaxed text-ink-2">
+                {facilityLines.map((line) => (
+                  <li key={line} className="flex gap-2">
+                    <span className="mt-[0.45em] size-1.5 shrink-0 bg-signal-dim" />
+                    <span>{line}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
+
+        {record.total !== null && (
+          <p className="mt-4 font-mono text-[10px] uppercase tracking-[0.12em] text-ink-3 tnum">
+            {formatTaka(record.total)} / month · {width}% of the highest figure
+            reported
+          </p>
+        )}
+      </div>
+    </details>
   );
 }

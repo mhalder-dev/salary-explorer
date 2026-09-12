@@ -13,19 +13,46 @@ export interface DropdownOption {
  * Keyboard: Enter/Space/Arrows open; Arrows/Home/End navigate; Enter selects;
  * Escape/Tab/outside-click closes.
  */
+/** Two surfaces exist in this design — warm paper, and the black console. */
+export type DropdownTone = "paper" | "console";
+
+const TONE = {
+  paper: {
+    button:
+      "border-rule-2/30 bg-paper text-ink hover:border-accent focus-visible:border-accent",
+    caret: "text-ink-3",
+    list: "border-rule-2 bg-paper shadow-[6px_6px_0_0_var(--rule-2)]",
+    option: "text-ink",
+    active: "bg-wash text-ink",
+    check: "text-accent",
+  },
+  console: {
+    button:
+      "border-slab-rule bg-slab-2/50 text-slab-ink hover:border-signal-dim focus-visible:border-signal",
+    caret: "text-slab-ink-2",
+    list: "border-slab-rule bg-slab shadow-[0_18px_40px_-12px_rgba(0,0,0,0.7)]",
+    option: "text-slab-ink",
+    active: "bg-signal-dim/20 text-signal",
+    check: "text-signal",
+  },
+} as const;
+
 export default function Dropdown({
   options,
   value,
   onChange,
   ariaLabel,
   className = "",
+  tone = "paper",
 }: {
   options: DropdownOption[];
   value: string;
   onChange: (value: string) => void;
   ariaLabel: string;
   className?: string;
+  tone?: DropdownTone;
 }) {
+  const t = TONE[tone];
   const [open, setOpen] = useState(false);
   const selectedIndex = Math.max(0, options.findIndex((o) => o.value === value));
   const [activeIndex, setActiveIndex] = useState(selectedIndex);
@@ -140,11 +167,11 @@ export default function Dropdown({
             openList();
           }
         }}
-        className="inline-flex h-10 w-full items-center justify-between gap-2 border border-line bg-surface pl-3 pr-2.5 text-sm text-ink outline-none transition hover:border-accent focus-visible:border-accent focus-visible:ring-2 focus-visible:ring-accent/25"
+        className={`inline-flex h-9 w-full items-center justify-between gap-2 border pl-2.5 pr-2 text-[13px] outline-none transition ${t.button}`}
       >
         <span className="truncate">{selected?.label}</span>
         <svg
-          className={`size-3.5 shrink-0 text-ink-muted transition-transform ${open ? "rotate-180" : ""}`}
+          className={`size-3.5 shrink-0 transition-transform ${t.caret} ${open ? "rotate-180" : ""}`}
           viewBox="0 0 16 16"
           fill="none"
           stroke="currentColor"
@@ -162,7 +189,7 @@ export default function Dropdown({
           aria-label={ariaLabel}
           aria-activedescendant={`${id}-opt-${activeIndex}`}
           onKeyDown={onListKeyDown}
-          className="absolute left-0 top-[calc(100%+4px)] z-30 max-h-72 w-full min-w-44 overflow-auto border border-line-strong bg-surface p-1 shadow-lg shadow-ink/10 outline-none"
+          className={`absolute left-0 top-[calc(100%+5px)] z-40 max-h-72 w-full min-w-44 overflow-auto border p-1 outline-none ${t.list}`}
         >
           {options.map((opt, i) => {
             const isSelected = i === selectedIndex;
@@ -176,15 +203,15 @@ export default function Dropdown({
                 onPointerMove={() => setActiveIndex(i)}
                 onClick={() => select(i)}
                 className={
-                  "flex cursor-pointer items-center justify-between gap-3 px-2.5 py-2 text-sm transition-colors " +
-                  (isActive ? "bg-accent-wash text-accent-strong " : "text-ink ") +
-                  (isSelected ? "font-medium" : "")
+                  "flex cursor-pointer items-center justify-between gap-3 px-2.5 py-1.5 text-[13px] transition-colors " +
+                  (isActive ? `${t.active} ` : `${t.option} `) +
+                  (isSelected ? "font-semibold" : "")
                 }
               >
                 <span className="truncate">{opt.label}</span>
                 {isSelected && (
                   <svg
-                    className="size-4 shrink-0 text-accent"
+                    className={`size-3.5 shrink-0 ${t.check}`}
                     viewBox="0 0 16 16"
                     fill="none"
                     stroke="currentColor"

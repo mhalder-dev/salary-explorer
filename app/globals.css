@@ -1,48 +1,87 @@
 @import "tailwindcss";
 
-/* Hallmark · genre: editorial · macrostructure: Stat-Led · theme: Almanac ·
- * enrichment: none · nav: N6 masthead · footer: Ft4 dense colophon ·
- * tone: editorial (data-almanac) · anchor hue: 245–250 cool slate
- * pre-emit critique: P4 H5 E4 S4 R5 V4 */
+/* ============================================================================
+ * "INSTRUMENT" — a bespoke design language for BD Faculty Salaries.
+ *
+ * Premise: a salary is a *measurement*, so the site is built like a measuring
+ * device. Warm bone paper for the reading matter; a black machined slab for the
+ * instrument itself; one acid-lime signal colour that only ever means "data".
+ *
+ * Rules that keep it coherent:
+ *   · Lime is the signal. It marks values, never decoration.
+ *   · Square corners everywhere except one deliberate pill (the submit key).
+ *   · Numbers are always tabular and always in the display face.
+ *   · Rules are either hairline (structure) or 2px black (emphasis). Nothing between.
+ * ========================================================================== */
 
 :root {
-  /* Light-only (user lock). color-scheme keeps native UI bright. */
   color-scheme: light;
 
-  /* Almanac palette — cool pale paper, slate accent, no pure white/black. */
-  --background: oklch(94% 0.008 245); /* paper */
-  --surface: oklch(97% 0.006 245); /* raised paper */
-  --ink: oklch(16% 0.02 245);
-  --ink-secondary: oklch(38% 0.016 245);
-  --ink-muted: oklch(46% 0.014 245);
-  --line: oklch(74% 0.012 240); /* hairline rule */
-  --line-strong: oklch(38% 0.018 240); /* double-rule / emphasis */
-  --accent: oklch(38% 0.135 250);
-  --accent-strong: oklch(30% 0.13 250);
-  --accent-contrast: oklch(96% 0.006 245);
-  --accent-wash: oklch(90% 0.03 250);
-  --track: oklch(86% 0.012 240);
+  /* --- Paper: warm bone newsprint, never blue-grey, never pure white ------ */
+  --paper: oklch(96.2% 0.013 92);
+  --paper-2: oklch(93.2% 0.017 92); /* recessed panels, alternating rows */
+  --ink: oklch(18% 0.014 92);
+  --ink-2: oklch(38% 0.012 92);
+  --ink-3: oklch(45% 0.012 92); /* still ≥4.5:1 on paper */
+  --rule: oklch(84% 0.012 92); /* hairline */
+  --rule-2: oklch(22% 0.014 92); /* 2px emphasis rule */
 
-  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
-  --dur-short: 220ms;
+  /* --- Slab: the instrument housing -------------------------------------- */
+  --slab: oklch(19.5% 0.021 155);
+  --slab-2: oklch(26% 0.024 155); /* raised panels */
+  --bar-idle: oklch(36% 0.035 152); /* unreached histogram bars — the sparse
+                                     * tail is the story, so it must stay legible */
+  --slab-ink: oklch(95% 0.012 120);
+  --slab-ink-2: oklch(72% 0.016 150);
+  --slab-rule: oklch(33% 0.022 155);
+
+  /* --- Signal: acid lime. The data colour. -------------------------------- */
+  --signal: oklch(86% 0.195 128);
+  --signal-dim: oklch(62% 0.14 130);
+  --signal-ink: oklch(20% 0.05 128); /* text ON lime */
+  --wash: oklch(92% 0.135 120); /* highlighter stroke on paper */
+  --wash-soft: oklch(95.6% 0.055 118); /* value bars behind ladder rows */
+
+  /* Lime fails contrast as text on paper — this is its paper-safe stand-in. */
+  --accent: oklch(42% 0.115 150);
+  --accent-strong: oklch(32% 0.10 150);
+
+  --flag: oklch(58% 0.14 55); /* "pay varies" — not a monthly figure */
+
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --dur: 240ms;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-surface: var(--surface);
+  --color-paper: var(--paper);
+  --color-paper-2: var(--paper-2);
   --color-ink: var(--ink);
-  --color-ink-secondary: var(--ink-secondary);
-  --color-ink-muted: var(--ink-muted);
-  --color-line: var(--line);
-  --color-line-strong: var(--line-strong);
+  --color-ink-2: var(--ink-2);
+  --color-ink-3: var(--ink-3);
+  --color-rule: var(--rule);
+  --color-rule-2: var(--rule-2);
+
+  --color-slab: var(--slab);
+  --color-slab-2: var(--slab-2);
+  --color-slab-ink: var(--slab-ink);
+  --color-slab-ink-2: var(--slab-ink-2);
+  --color-slab-rule: var(--slab-rule);
+
+  --color-signal: var(--signal);
+  --color-signal-dim: var(--signal-dim);
+  --color-signal-ink: var(--signal-ink);
+  --color-bar-idle: var(--bar-idle);
+  --color-wash: var(--wash);
+  --color-wash-soft: var(--wash-soft);
   --color-accent: var(--accent);
   --color-accent-strong: var(--accent-strong);
-  --color-accent-contrast: var(--accent-contrast);
-  --color-accent-wash: var(--accent-wash);
-  --color-track: var(--track);
-  --font-sans: var(--font-hanken);
-  --font-serif: var(--font-newsreader);
-  --font-mono: var(--font-plex-mono);
+  --color-flag: var(--flag);
+
+  --font-display: var(--font-bricolage), var(--font-bengali), ui-sans-serif, sans-serif;
+  --font-sans: var(--font-instrument), var(--font-bengali), ui-sans-serif, sans-serif;
+  --font-mono: var(--font-jet), var(--font-bengali), ui-monospace, monospace;
+
+  --ease-instrument: var(--ease);
 }
 
 html,
@@ -51,20 +90,196 @@ body {
 }
 
 body {
-  background: var(--background);
+  background: var(--paper);
   color: var(--ink);
-  font-family: var(--font-sans), system-ui, -apple-system, sans-serif;
+  font-family: var(--font-instrument), var(--font-bengali), ui-sans-serif, sans-serif;
+  -webkit-font-smoothing: antialiased;
 }
 
-/* Tabular figures everywhere numbers align (Stat-Led discipline). */
+/* Bricolage carries a width axis — pull display sizes narrow so the big numerals
+ * read as machined rather than ballooned. */
+.display {
+  font-family: var(--font-bricolage), var(--font-bengali), ui-sans-serif, sans-serif;
+  font-variation-settings: "wdth" 88;
+  letter-spacing: -0.03em;
+}
+
+/* Noto Sans Bengali is chained into every stack above so ৳ always resolves.
+ * This only relaxes the display face's narrow variation settings, which the
+ * Bengali face does not have and which distort the sign. */
+.taka {
+  font-variation-settings: normal;
+  letter-spacing: 0;
+}
+
 .tnum {
   font-variant-numeric: tabular-nums;
 }
 
-/* Double rule — the masthead's signature (N6). */
-.rule-double {
+/* --- Surface texture ------------------------------------------------------
+ * Fractal-noise grain keeps the black slab from reading as flat dead pixels.
+ * Pointer-events off; purely optical. */
+.grain::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.055;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* Faint engineering grid on the slab — the graph paper under the instrument. */
+.gridlines::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(to right, var(--slab-rule) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--slab-rule) 1px, transparent 1px);
+  background-size: 72px 72px;
+  opacity: 0.28;
+  mask-image: radial-gradient(120% 90% at 50% 0%, #000 30%, transparent 78%);
+}
+
+/* --- Highlighter -----------------------------------------------------------
+ * A hand-swiped marker stroke behind inline text. The irregular clip-path is
+ * what sells it — a plain rectangle reads as a <mark> tag. */
+.hl {
+  position: relative;
+  isolation: isolate; /* keeps the z-index:-1 swipe above the section background */
+  white-space: nowrap;
+}
+.hl::before {
+  content: "";
+  position: absolute;
+  /* Negative top/bottom: tight display leading pushes ascenders and descenders
+   * outside the line box, and any glyph left uncovered is dark-on-dark. */
+  inset: -0.1em -0.16em -0.08em;
+  background: var(--wash);
+  clip-path: polygon(0.4% 7%, 99.5% 0.5%, 100% 93%, 99.2% 99%, 0.8% 100%, 0% 11%);
+  z-index: -1;
+}
+/* On the slab the same gesture is drawn in signal lime with dark text. */
+.hl-slab::before {
+  background: var(--signal);
+}
+
+/* --- Hatch: "pay varies, not a monthly figure" ---------------------------- */
+.hatch {
+  background-image: repeating-linear-gradient(
+    -45deg,
+    var(--flag) 0 1px,
+    transparent 1px 6px
+  );
+}
+
+/* --- The scope: histogram + needle ---------------------------------------
+ * The range input is laid transparently over the whole skyline so dragging
+ * anywhere on the chart moves the needle. The thumb is a full-height blade. */
+.needle {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  cursor: ew-resize;
+  margin: 0;
+}
+.needle::-webkit-slider-runnable-track {
+  height: 100%;
+  background: transparent;
+}
+.needle::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 3px;
+  height: 100%;
   border: 0;
-  border-top: 1px solid var(--line-strong);
-  border-bottom: 1px solid var(--line-strong);
-  height: 4px;
+  border-radius: 0;
+  background: var(--slab-ink);
+  box-shadow: 0 0 0 1px var(--slab), 0 0 14px 1px oklch(86% 0.195 128 / 0.55);
+  cursor: ew-resize;
+}
+.needle::-moz-range-track {
+  height: 100%;
+  background: transparent;
+}
+.needle::-moz-range-thumb {
+  width: 3px;
+  height: 100%;
+  border: 0;
+  border-radius: 0;
+  background: var(--slab-ink);
+  box-shadow: 0 0 0 1px var(--slab), 0 0 14px 1px oklch(86% 0.195 128 / 0.55);
+  cursor: ew-resize;
+}
+.needle:focus-visible {
+  outline: none;
+}
+.needle:focus-visible::-webkit-slider-thumb {
+  background: var(--signal);
+  box-shadow: 0 0 0 2px var(--slab), 0 0 0 4px var(--signal);
+}
+.needle:focus-visible::-moz-range-thumb {
+  background: var(--signal);
+  box-shadow: 0 0 0 2px var(--slab), 0 0 0 4px var(--signal);
+}
+
+/* Ruler ticks beneath the scope — a real measuring edge, minor + major. */
+.ruler {
+  background-image: repeating-linear-gradient(
+    to right,
+    var(--slab-rule) 0 1px,
+    transparent 1px calc(100% / 36)
+  );
+}
+
+/* --- Motion ---------------------------------------------------------------
+ * Bars grow from the axis on first paint; staggered by inline delay. */
+@keyframes rise {
+  from {
+    transform: scaleY(0.04);
+    opacity: 0.2;
+  }
+  to {
+    transform: scaleY(1);
+    opacity: 1;
+  }
+}
+.rise {
+  transform-origin: bottom;
+  animation: rise 620ms var(--ease) backwards;
+}
+
+@keyframes sweep {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+.sweep {
+  animation: sweep 700ms var(--ease) backwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rise,
+  .sweep {
+    animation: none;
+  }
+  * {
+    transition-duration: 1ms !important;
+  }
+}
+
+/* Focus: chunky and lime — visible on both paper and slab. */
+:where(a, button, input, summary, [tabindex]):focus-visible {
+  outline: 2px solid var(--signal-dim);
+  outline-offset: 2px;
+}
+
+/* Native search affordances fight the custom console styling. */
+input[type="search"]::-webkit-search-cancel-button {
+  -webkit-appearance: none;
+  appearance: none;
 }
